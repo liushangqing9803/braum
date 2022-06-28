@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public @interface EasyRateLimier {
 
     /**
-     * 资源命名
+     * 资源命名，唯一标识
      */
     String value() default "";
 
@@ -36,7 +36,8 @@ public @interface EasyRateLimier {
     long timeout() default 0L;
 
     /**
-     * 如果限流处理类型为 WAIT ,则默认有效
+     * 如果限流处理类型为 WAIT
+     * 默认：毫秒
      */
     TimeUnit timeoutUnit() default TimeUnit.MILLISECONDS;
 }
