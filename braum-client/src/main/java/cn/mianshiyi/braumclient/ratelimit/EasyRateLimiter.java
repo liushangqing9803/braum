@@ -5,10 +5,10 @@ package cn.mianshiyi.braumclient.ratelimit;
  */
 public abstract class EasyRateLimiter {
 
-    public abstract EasyRateLimiter create(double permitsPerSecond);
+    public abstract EasyRateLimiter create(double permitsPerSecond, String pointName);
 
-    public abstract boolean acquire();
+    public abstract boolean acquire(long timeout);
 
-    public abstract boolean tryAcquire(long timeout);
+    public abstract boolean tryAcquire();
 
 }

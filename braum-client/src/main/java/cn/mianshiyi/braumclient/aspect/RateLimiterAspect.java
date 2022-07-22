@@ -7,6 +7,7 @@ import cn.mianshiyi.braumclient.enums.LimiterType;
 import cn.mianshiyi.braumclient.exception.RateLimitBlockException;
 import cn.mianshiyi.braumclient.exception.RateLimitTimeoutBlockException;
 import cn.mianshiyi.braumclient.ratelimit.EasyRateLimiter;
+import cn.mianshiyi.braumclient.ratelimit.EasyRedisCalcRateLimiter;
 import cn.mianshiyi.braumclient.ratelimit.LocalEasyRateLimiter;
 import com.google.common.collect.Maps;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -55,12 +56,12 @@ public class RateLimiterAspect {
         switch (limiterHandleType) {
             case WAIT:
                 long timeout = annotation.timeout();
-                if (!rateLimiter.tryAcquire(timeout)) {
+                if (!rateLimiter.acquire(timeout)) {
                     throw new RateLimitTimeoutBlockException(Constant.BLOCK_TIMEOUT_EXCEPTION_MSG);
                 }
                 break;
             case EXCEPTION:
-                if (!rateLimiter.acquire()) {
+                if (!rateLimiter.tryAcquire()) {
                     throw new RateLimitBlockException(Constant.BLOCK_EXCEPTION_MSG);
                 }
             default:
@@ -85,10 +86,9 @@ public class RateLimiterAspect {
                 if (RATE_LIMITER_MAP.get(value) == null) {
                     EasyRateLimiter easyRateLimiter;
                     if (LimiterType.DIST == limiterType) {
-                        //TODO
-                        easyRateLimiter = new LocalEasyRateLimiter().create(permitsPerSecond);
+                        easyRateLimiter = new EasyRedisCalcRateLimiter().create(permitsPerSecond,value);
                     } else {
-                        easyRateLimiter = new LocalEasyRateLimiter().create(permitsPerSecond);
+                        easyRateLimiter = new LocalEasyRateLimiter().create(permitsPerSecond,value);
                     }
                     RATE_LIMITER_MAP.put(value, easyRateLimiter);
                 }
