@@ -1,8 +1,7 @@
 ## braum:布隆
 ### **布隆**：英雄联盟中坦克英雄，拥有巨大的盾牌，可以拦截住对方的各种技能。
 
->基于guava-rateLimiter 的小工具,使用注解方式方便使用。
->guava-rateLimiter 是一款基于令牌桶机制的单机限流工具，但目前使用方式通过编码的方式进行，
+>使用令牌桶机制限流的小工具,使用注解方式方便使用。
 **braum**帮你实现注解方式，更加简单快捷。
 
 
@@ -30,9 +29,12 @@ public class Application extends SpringBootServletInitializer {
 ```
 
 ### 关键类解释
-1. com.google.common.util.concurrent.RateLimiter
-该类网上都很多不错的讲解，在此不再描述。
-2. cn.mianshiyi.braumclient.annotation.EasyRateLimier
+1. cn.mianshiyi.braumclient.ratelimit.LocalEasyRateLimiter
+   本地单机限流
+2. cn.mianshiyi.braumclient.ratelimit.EasyRedisCalcRateLimiter
+   分布式限流，依赖redis
+3. cn.mianshiyi.braumclient.annotation.EasyRateLimier
+   注解
 ```
     /**
      * 资源命名，唯一标识
