@@ -22,17 +22,24 @@ public class Application extends SpringBootServletInitializer {
 ```
 2. 第三步：
 ```
-    @EasyRateLimier(value = "test", permitsPerSecond = 0.5, limiterHandleType = LimiterHandleType.WAIT, timeout = 1000L)
+   //本地单机限流
+        @EasyRateLimier(value = "test", permitsPerSecond = 0.1, limiterType = LimiterType.LOCAL, limiterHandleType = LimiterHandleType.WAIT, timeout = 2000L)
+    public String global() {
+        return "111";
+    }
+      //分布式限流
+      @EasyRateLimier(value = "test", permitsPerSecond = 0.1, limiterType = LimiterType.DIST, limiterHandleType = LimiterHandleType.WAIT, timeout = 2000L)
     public String global() {
         return "111";
     }
 ```
 
 ### 关键类解释
+  本地单机限流
 1. cn.mianshiyi.braumclient.ratelimit.LocalEasyRateLimiter
-   本地单机限流
+  分布式限流，依赖redis
 2. cn.mianshiyi.braumclient.ratelimit.EasyRedisCalcRateLimiter
-   分布式限流，依赖redis
+   注解
 3. cn.mianshiyi.braumclient.annotation.EasyRateLimier
    注解
 ```
