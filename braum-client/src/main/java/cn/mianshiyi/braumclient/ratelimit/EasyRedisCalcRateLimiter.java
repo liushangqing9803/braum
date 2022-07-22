@@ -103,8 +103,8 @@ public class EasyRedisCalcRateLimiter extends EasyRateLimiter {
 
     @Override
     public boolean tryAcquire() {
-        //TODO
-        Jedis jedis = new Jedis("101.43.141.80", 6379);
+        //TODO 待定
+        Jedis jedis = new Jedis("xxxxx", 6379);
         Long eval = (Long) jedis.eval(lua, 2, this.pointName, this.pointName,
                 String.valueOf(this.stableIntervalMicros), String.valueOf(this.maxPermits));
         //执行redis脚本 -1 代表失败 1代表成功
