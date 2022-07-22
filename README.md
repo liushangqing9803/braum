@@ -22,13 +22,13 @@ public class Application extends SpringBootServletInitializer {
 ```
 2. 第三步：
 ```
-   //本地单机限流
-        @EasyRateLimier(value = "test", permitsPerSecond = 0.1, limiterType = LimiterType.LOCAL, limiterHandleType = LimiterHandleType.WAIT, timeout = 2000L)
+    //本地单机限流
+    @EasyRateLimier(value = "test", permitsPerSecond = 0.1, limiterType = LimiterType.LOCAL, limiterHandleType = LimiterHandleType.WAIT, timeout = 2000L)
     public String global() {
         return "111";
     }
-      //分布式限流
-      @EasyRateLimier(value = "test", permitsPerSecond = 0.1, limiterType = LimiterType.DIST, limiterHandleType = LimiterHandleType.WAIT, timeout = 2000L)
+    //分布式限流
+    @EasyRateLimier(value = "test", permitsPerSecond = 0.1, limiterType = LimiterType.DIST, limiterHandleType = LimiterHandleType.WAIT, timeout = 2000L)
     public String global() {
         return "111";
     }
