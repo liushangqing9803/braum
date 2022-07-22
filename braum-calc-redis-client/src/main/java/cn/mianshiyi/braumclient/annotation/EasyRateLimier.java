@@ -1,7 +1,6 @@
 package cn.mianshiyi.braumclient.annotation;
 
 import cn.mianshiyi.braumclient.enums.LimiterHandleType;
-import cn.mianshiyi.braumclient.enums.LimiterType;
 
 import java.lang.annotation.*;
 import java.util.concurrent.TimeUnit;
@@ -25,12 +24,6 @@ public @interface EasyRateLimier {
     double permitsPerSecond() default 0.0d;
 
     /**
-     * 限流类型 本地、分布式
-     * 默认本地
-     */
-    LimiterType limiterType() default LimiterType.LOCAL;
-
-    /**
      * 限流处理类型 默认 抛出异常
      * RateLimitBlockException
      */
@@ -39,7 +32,12 @@ public @interface EasyRateLimier {
     /**
      * 如果限流处理类型为 WAIT ,则默认有效
      * 超时 默认抛出异常:RateLimitTimeoutBlockException
-     * 单位：毫秒
      */
     long timeout() default 0L;
+
+    /**
+     * 如果限流处理类型为 WAIT
+     * 默认：毫秒
+     */
+    TimeUnit timeoutUnit() default TimeUnit.MILLISECONDS;
 }

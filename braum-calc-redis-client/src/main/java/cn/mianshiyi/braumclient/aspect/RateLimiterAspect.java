@@ -3,12 +3,10 @@ package cn.mianshiyi.braumclient.aspect;
 import cn.mianshiyi.braumclient.annotation.EasyRateLimier;
 import cn.mianshiyi.braumclient.common.Constant;
 import cn.mianshiyi.braumclient.enums.LimiterHandleType;
-import cn.mianshiyi.braumclient.enums.LimiterType;
 import cn.mianshiyi.braumclient.exception.RateLimitBlockException;
 import cn.mianshiyi.braumclient.exception.RateLimitTimeoutBlockException;
-import cn.mianshiyi.braumclient.ratelimit.EasyRateLimiter;
-import cn.mianshiyi.braumclient.ratelimit.LocalEasyRateLimiter;
 import com.google.common.collect.Maps;
+import com.google.common.util.concurrent.RateLimiter;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -18,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -26,7 +25,7 @@ import java.util.Map;
 @Component
 public class RateLimiterAspect {
 
-    private static final Map<String, EasyRateLimiter> RATE_LIMITER_MAP = Maps.newConcurrentMap();
+    private static Map<String, RateLimiter> RATE_LIMITER_MAP = Maps.newConcurrentMap();
 
     final Object LOCK = new Object();
 
@@ -42,7 +41,7 @@ public class RateLimiterAspect {
         if (annotation == null) {
             throw new IllegalStateException("Wrong state for rate limiter annotation");
         }
-        EasyRateLimiter rateLimiter = getReteLimiter(annotation);
+        RateLimiter rateLimiter = getReteLimiter(annotation);
         if (rateLimiter == null) {
             return pjp.proceed();
         }
@@ -50,47 +49,42 @@ public class RateLimiterAspect {
         return pjp.proceed();
     }
 
-    private void rateLimiterExecute(EasyRateLimier annotation, EasyRateLimiter rateLimiter) {
+    private void rateLimiterExecute(EasyRateLimier annotation, RateLimiter rateLimiter) {
         LimiterHandleType limiterHandleType = annotation.limiterHandleType();
         switch (limiterHandleType) {
             case WAIT:
                 long timeout = annotation.timeout();
-                if (!rateLimiter.tryAcquire(timeout)) {
+                TimeUnit timeUnit = annotation.timeoutUnit();
+                if (!rateLimiter.tryAcquire(timeout, timeUnit)) {
                     throw new RateLimitTimeoutBlockException(Constant.BLOCK_TIMEOUT_EXCEPTION_MSG);
                 }
                 break;
             case EXCEPTION:
-                if (!rateLimiter.acquire()) {
+                if (!rateLimiter.tryAcquire()) {
                     throw new RateLimitBlockException(Constant.BLOCK_EXCEPTION_MSG);
                 }
             default:
         }
     }
 
-    private EasyRateLimiter getReteLimiter(EasyRateLimier annotation) {
+
+    private RateLimiter getReteLimiter(EasyRateLimier annotation) {
         String value = annotation.value();
         double permitsPerSecond = annotation.permitsPerSecond();
-        LimiterType limiterType = annotation.limiterType();
         if (value == null || value.equals("")) {
             //TODO 打印日志
             return null;
         }
-        return buildRateLimiter(value, permitsPerSecond, limiterType);
+        return buildRateLimiter(value, permitsPerSecond);
     }
 
 
-    private EasyRateLimiter buildRateLimiter(String value, double permitsPerSecond, LimiterType limiterType) {
+    private RateLimiter buildRateLimiter(String value, double permitsPerSecond) {
         if (RATE_LIMITER_MAP.get(value) == null) {
             synchronized (LOCK) {
                 if (RATE_LIMITER_MAP.get(value) == null) {
-                    EasyRateLimiter easyRateLimiter;
-                    if (LimiterType.DIST == limiterType) {
-                        //TODO
-                        easyRateLimiter = new LocalEasyRateLimiter().create(permitsPerSecond);
-                    } else {
-                        easyRateLimiter = new LocalEasyRateLimiter().create(permitsPerSecond);
-                    }
-                    RATE_LIMITER_MAP.put(value, easyRateLimiter);
+                    RateLimiter rateLimiter = RateLimiter.create(permitsPerSecond);
+                    RATE_LIMITER_MAP.put(value, rateLimiter);
                 }
             }
         }
