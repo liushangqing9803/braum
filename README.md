@@ -29,9 +29,12 @@ public class Application extends SpringBootServletInitializer {
 ```
 
 ### 关键类解释
-1. com.google.common.util.concurrent.RateLimiter
-该类网上都很多不错的讲解，在此不再描述。
-2. cn.mianshiyi.braumclient.annotation.EasyRateLimier
+1. cn.mianshiyi.braumclient.ratelimit.LocalEasyRateLimiter
+   本地单机限流
+2. cn.mianshiyi.braumclient.ratelimit.EasyRedisCalcRateLimiter
+   分布式限流，依赖redis
+3. cn.mianshiyi.braumclient.annotation.EasyRateLimier
+   注解
 ```
     /**
      * 资源命名，唯一标识
