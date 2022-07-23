@@ -6,9 +6,9 @@ import cn.mianshiyi.braumclient.enums.LimiterHandleType;
 import cn.mianshiyi.braumclient.enums.LimiterType;
 import cn.mianshiyi.braumclient.exception.RateLimitBlockException;
 import cn.mianshiyi.braumclient.exception.RateLimitTimeoutBlockException;
+import cn.mianshiyi.braumclient.ratelimit.EasyLocalRateLimiter;
 import cn.mianshiyi.braumclient.ratelimit.EasyRateLimiter;
 import cn.mianshiyi.braumclient.ratelimit.EasyRedisCalcRateLimiter;
-import cn.mianshiyi.braumclient.ratelimit.LocalEasyRateLimiter;
 import cn.mianshiyi.braumclient.redis.RedisCalc;
 import com.google.common.collect.Maps;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -95,7 +95,7 @@ public class RateLimiterAspect {
                     if (LimiterType.DIST == limiterType) {
                         easyRateLimiter = new EasyRedisCalcRateLimiter().setRedisCalc(redisCalc).create(permitsPerSecond, value);
                     } else {
-                        easyRateLimiter = new LocalEasyRateLimiter().create(permitsPerSecond, value);
+                        easyRateLimiter = new EasyLocalRateLimiter().create(permitsPerSecond, value);
                     }
                     RATE_LIMITER_MAP.put(value, easyRateLimiter);
                 }

@@ -1,9 +1,7 @@
 package cn.mianshiyi.demo;
 
+import cn.mianshiyi.braumclient.ratelimit.EasyLocalRateLimiter;
 import cn.mianshiyi.braumclient.ratelimit.EasyRateLimiter;
-import cn.mianshiyi.braumclient.ratelimit.EasyRedisCalcRateLimiter;
-import cn.mianshiyi.braumclient.ratelimit.LocalEasyRateLimiter;
-import cn.mianshiyi.braumclient.redis.RedisCalc;
 
 /**
  * @author shangqing.liu
@@ -11,7 +9,7 @@ import cn.mianshiyi.braumclient.redis.RedisCalc;
 public class LocalLimiter {
 
     public static void main(String[] args) throws InterruptedException {
-        EasyRateLimiter easyRateLimiter = new LocalEasyRateLimiter().create(2000, "test");
+        EasyRateLimiter easyRateLimiter = new EasyLocalRateLimiter().create(2000, "test");
         for (int i = 0; i < 20; i++) {
             new Thread(new Runnable() {
                 @Override

@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author shangqing.liu
  */
-public class LocalEasyRateLimiter extends EasyRateLimiter {
+public class EasyLocalRateLimiter extends EasyRateLimiter {
 
     private final Stopwatch stopwatch = Stopwatch.createStarted();
     //毫秒
