@@ -69,6 +69,12 @@ public class Application extends SpringBootServletInitializer {
      * 每秒内允许通过的数量
      */
     double permitsPerSecond() default 0.0d;
+    
+     /**
+     * 限流类型 本地、分布式
+     * 默认本地
+     */
+    LimiterType limiterType() default LimiterType.LOCAL;
 
     /**
      * 限流处理类型 默认 抛出异常
@@ -79,15 +85,9 @@ public class Application extends SpringBootServletInitializer {
     /**
      * 如果限流处理类型为 WAIT ,则默认有效
      * 超时 默认抛出异常:RateLimitTimeoutBlockException
+     * 单位 毫秒
      */
     long timeout() default 0L;
-
-    /**
-     * 如果限流处理类型为 WAIT 
-     * 默认：毫秒
-     */
-    TimeUnit timeoutUnit() default TimeUnit.MILLISECONDS;
-
 ```
 ### 后续支持
 1. IP维度限流
