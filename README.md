@@ -5,10 +5,11 @@
 **braum**帮你实现注解方式，更加简单快捷。
 
 
-#### 使用方式：
-springboot：只需三步即可使用，
+### 使用方式：
+#### 单机限流
+springboot：单机只需三步即可使用，
 1. 第一步：
-复制代码或引入jar包。
+拉取代码或引入jar包。
 2. 第二步：
 ```
 /**
@@ -32,6 +33,22 @@ public class Application extends SpringBootServletInitializer {
     public String global() {
         return "111";
     }
+```
+
+#### 分布式限流
+需要实现接口：cn.mianshiyi.braumclient.redis.RedisCalc
+```aidl
+ /**
+     * 因考虑redis客户端较多，用户需自行实现该接口，并交由spring管理
+     *
+     * @param luaValue lua脚本
+     * @param key1     限流key
+     * @param value1   生产时间
+     * @param key2     限流key
+     * @param value2   最大token数量
+     * @return 执行结果
+     */
+    Object eval(String luaValue, String key1, String value1, String key2, String value2);
 ```
 
 ### 关键类解释
@@ -72,4 +89,10 @@ public class Application extends SpringBootServletInitializer {
     TimeUnit timeoutUnit() default TimeUnit.MILLISECONDS;
 
 ```
-
+### 后续支持
+1. IP维度限流
+2. IP+方法维度限流
+3. 参数表达式限流
+4. 自定维度义限流
+5. 可视化监控
+6. 限流规则运行时修改

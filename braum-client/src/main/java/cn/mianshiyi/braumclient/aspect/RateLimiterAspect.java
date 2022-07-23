@@ -86,6 +86,8 @@ public class RateLimiterAspect {
 
 
     private EasyRateLimiter buildRateLimiter(String value, double permitsPerSecond, LimiterType limiterType) {
+        //处理value
+        value = Constant.PRE_KEY + value;
         if (RATE_LIMITER_MAP.get(value) == null) {
             synchronized (LOCK) {
                 if (RATE_LIMITER_MAP.get(value) == null) {
