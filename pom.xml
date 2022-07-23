@@ -10,7 +10,7 @@
 
     <modules>
         <module>braum-client</module>
-        <module>braum-calc-redis-client</module>
+        <module>braum-demo</module>
     </modules>
 
     <dependencies>

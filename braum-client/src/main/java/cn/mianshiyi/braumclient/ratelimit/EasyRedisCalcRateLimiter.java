@@ -1,7 +1,7 @@
 package cn.mianshiyi.braumclient.ratelimit;
 
+import cn.mianshiyi.braumclient.redis.RedisCalc;
 import com.google.common.base.Stopwatch;
-import redis.clients.jedis.Jedis;
 
 import java.util.concurrent.TimeUnit;
 
@@ -50,22 +50,32 @@ public class EasyRedisCalcRateLimiter extends EasyRateLimiter {
             "    local waitMicros = freshPermits * stableIntervalMicros;\n" +
             "    nextFreeTicketMicros = nowMicros + waitMicros;\n" +
             "    storedPermits = storedPermits - storedPermitsToSpend;\n" +
-            "    redis.pcall('HMSET', keyPoint, 'nextFreeTicketMicros', tostring(nextFreeTicketMicros));\n" +
-            "    redis.pcall('HMSET', keyPoint, 'storedPermits', tostring(storedPermits));\n" +
+            "    redis.pcall('HMSET', keyPoint, 'nextFreeTicketMicros', tostring(nextFreeTicketMicros), 'storedPermits', tostring(storedPermits));\n" +
+            "    redis.pcall('EXPIRE', keyPoint, 86400);\n" +
             "    return 1;\n" +
             "else\n" +
-            "    return -1;\n" +
-            "end";
+            "    if storedPermits - 1 >= 0 then\n" +
+            "        return 1;\n" +
+            "    else\n" +
+            "        return -1;\n" +
+            "    end\n" +
+            "end\n";
 
     //毫秒
     private static final long MAX_INTERVAL_WAIT_TIME = 5;
-
     //最大存储容量
     double maxPermits;
     //多长时间生成一个容量
     double stableIntervalMicros;
-
+    //限流名称
     String pointName;
+    //执行接口
+    RedisCalc redisCalc;
+
+    public EasyRateLimiter setRedisCalc(RedisCalc redisCalc) {
+        this.redisCalc = redisCalc;
+        return this;
+    }
 
     @Override
     public EasyRateLimiter create(double permitsPerSecond, String pointName) {
@@ -103,32 +113,8 @@ public class EasyRedisCalcRateLimiter extends EasyRateLimiter {
 
     @Override
     public boolean tryAcquire() {
-        //TODO 待定
-        Jedis jedis = new Jedis("xxxxx", 6379);
-        Long eval = (Long) jedis.eval(lua, 2, this.pointName, this.pointName,
-                String.valueOf(this.stableIntervalMicros), String.valueOf(this.maxPermits));
+        Long eval = (Long) redisCalc.eval(lua, this.pointName, String.valueOf(this.stableIntervalMicros), this.pointName, String.valueOf(this.maxPermits));
         //执行redis脚本 -1 代表失败 1代表成功
         return eval != null && eval > 0;
-    }
-
-    public static void main(String[] args) throws InterruptedException {
-        EasyRateLimiter easyRateLimiter = new EasyRedisCalcRateLimiter().create(40, "test");
-
-        for (int i = 0; i < 10; i++) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    for (int j = 0; j < 3; j++) {
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(500);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        System.out.println(easyRateLimiter.tryAcquire());
-                    }
-                }
-            }).start();
-        }
-
     }
 }

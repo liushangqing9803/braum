@@ -9,12 +9,14 @@ import cn.mianshiyi.braumclient.exception.RateLimitTimeoutBlockException;
 import cn.mianshiyi.braumclient.ratelimit.EasyRateLimiter;
 import cn.mianshiyi.braumclient.ratelimit.EasyRedisCalcRateLimiter;
 import cn.mianshiyi.braumclient.ratelimit.LocalEasyRateLimiter;
+import cn.mianshiyi.braumclient.redis.RedisCalc;
 import com.google.common.collect.Maps;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
@@ -30,6 +32,9 @@ public class RateLimiterAspect {
     private static final Map<String, EasyRateLimiter> RATE_LIMITER_MAP = Maps.newConcurrentMap();
 
     final Object LOCK = new Object();
+
+    @Autowired(required = false)
+    private RedisCalc redisCalc;
 
     @Pointcut("@annotation(cn.mianshiyi.braumclient.annotation.EasyRateLimier)")
     public void rateLimiterAnnotationPointcut() {
@@ -86,9 +91,9 @@ public class RateLimiterAspect {
                 if (RATE_LIMITER_MAP.get(value) == null) {
                     EasyRateLimiter easyRateLimiter;
                     if (LimiterType.DIST == limiterType) {
-                        easyRateLimiter = new EasyRedisCalcRateLimiter().create(permitsPerSecond,value);
+                        easyRateLimiter = new EasyRedisCalcRateLimiter().setRedisCalc(redisCalc).create(permitsPerSecond, value);
                     } else {
-                        easyRateLimiter = new LocalEasyRateLimiter().create(permitsPerSecond,value);
+                        easyRateLimiter = new LocalEasyRateLimiter().create(permitsPerSecond, value);
                     }
                     RATE_LIMITER_MAP.put(value, easyRateLimiter);
                 }

@@ -27,9 +27,13 @@ if spTime > 0 then
     local waitMicros = freshPermits * stableIntervalMicros;
     nextFreeTicketMicros = nowMicros + waitMicros;
     storedPermits = storedPermits - storedPermitsToSpend;
-    redis.pcall('HMSET', keyPoint, 'nextFreeTicketMicros', tostring(nextFreeTicketMicros));
-    redis.pcall('HMSET', keyPoint, 'storedPermits', tostring(storedPermits));
+    redis.pcall('HMSET', keyPoint, 'nextFreeTicketMicros', tostring(nextFreeTicketMicros), 'storedPermits', tostring(storedPermits));
+    redis.pcall('EXPIRE', keyPoint, 86400);
     return 1;
 else
-    return -1;
+    if storedPermits - 1 >= 0 then
+        return 1;
+    else
+        return -1;
+    end
 end
