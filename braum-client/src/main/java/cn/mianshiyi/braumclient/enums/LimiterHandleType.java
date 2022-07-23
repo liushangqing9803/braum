@@ -5,5 +5,4 @@ package cn.mianshiyi.braumclient.enums;
  */
 public enum LimiterHandleType {
     EXCEPTION, WAIT,
-    ;
 }

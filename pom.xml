@@ -10,7 +10,7 @@
 
     <modules>
         <module>braum-client</module>
-        <module>braum-demo</module>
+        <module>braum-example</module>
     </modules>
 
     <dependencies>

@@ -1,4 +1,4 @@
-package cn.mianshiyi.demo;
+package cn.mianshiyi.example.demo;
 
 import cn.mianshiyi.braumclient.ratelimit.EasyRateLimiter;
 import cn.mianshiyi.braumclient.ratelimit.EasyRedisCalcRateLimiter;

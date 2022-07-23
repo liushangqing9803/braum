@@ -3,6 +3,7 @@ package cn.mianshiyi.braumclient.aspect;
 import cn.mianshiyi.braumclient.annotation.EasyRateLimier;
 import cn.mianshiyi.braumclient.common.Constant;
 import cn.mianshiyi.braumclient.enums.LimiterHandleType;
+import cn.mianshiyi.braumclient.enums.LimiterKeyType;
 import cn.mianshiyi.braumclient.enums.LimiterType;
 import cn.mianshiyi.braumclient.exception.RateLimitBlockException;
 import cn.mianshiyi.braumclient.exception.RateLimitTimeoutBlockException;
@@ -10,13 +11,21 @@ import cn.mianshiyi.braumclient.ratelimit.EasyLocalRateLimiter;
 import cn.mianshiyi.braumclient.ratelimit.EasyRateLimiter;
 import cn.mianshiyi.braumclient.ratelimit.EasyRedisCalcRateLimiter;
 import cn.mianshiyi.braumclient.redis.RedisCalc;
+import cn.mianshiyi.braumclient.utils.EasyLimiterThreadLocal;
 import com.google.common.collect.Maps;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.expression.MethodBasedEvaluationContext;
+import org.springframework.core.DefaultParameterNameDiscoverer;
+import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.expression.EvaluationContext;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
@@ -33,6 +42,10 @@ public class RateLimiterAspect {
 
     final Object LOCK = new Object();
 
+    private final ExpressionParser parser = new SpelExpressionParser();
+
+    private final ParameterNameDiscoverer nameDiscoverer = new DefaultParameterNameDiscoverer();
+
     @Autowired(required = false)
     private RedisCalc redisCalc;
 
@@ -48,7 +61,8 @@ public class RateLimiterAspect {
         if (annotation == null) {
             throw new IllegalStateException("Wrong state for rate limiter annotation");
         }
-        EasyRateLimiter rateLimiter = getReteLimiter(annotation);
+        String sourceName = analysisSourceName(pjp, originMethod, annotation);
+        EasyRateLimiter rateLimiter = getReteLimiter(annotation, sourceName);
         if (rateLimiter == null) {
             return pjp.proceed();
         }
@@ -73,21 +87,18 @@ public class RateLimiterAspect {
         }
     }
 
-    private EasyRateLimiter getReteLimiter(EasyRateLimier annotation) {
-        String value = annotation.value();
+    private EasyRateLimiter getReteLimiter(EasyRateLimier annotation, String sourceName) {
         double permitsPerSecond = annotation.permitsPerSecond();
         LimiterType limiterType = annotation.limiterType();
-        if (value == null || value.equals("")) {
+        if (sourceName == null || sourceName.equals("")) {
             //TODO 打印日志
             return null;
         }
-        return buildRateLimiter(value, permitsPerSecond, limiterType);
+        return buildRateLimiter(sourceName, permitsPerSecond, limiterType);
     }
 
 
     private EasyRateLimiter buildRateLimiter(String value, double permitsPerSecond, LimiterType limiterType) {
-        //处理value
-        value = Constant.PRE_KEY + value;
         if (RATE_LIMITER_MAP.get(value) == null) {
             synchronized (LOCK) {
                 if (RATE_LIMITER_MAP.get(value) == null) {
@@ -125,5 +136,40 @@ public class RateLimiterAspect {
             }
         }
         return null;
+    }
+
+    public String analysisSourceName(JoinPoint joinPoint, Method method, EasyRateLimier easyRateLimier) {
+        StringBuilder builder = new StringBuilder(Constant.PRE_KEY);
+        builder.append(easyRateLimier.value());
+        LimiterKeyType limiterKeyType = easyRateLimier.keyType();
+        if (limiterKeyType == null) {
+            return builder.toString();
+        }
+        switch (limiterKeyType) {
+            case PARAM:
+                String[] keys = easyRateLimier.keys();
+                if (keys != null && keys.length > 0) {
+                    for (String key : keys) {
+                        if (key != null) {
+                            EvaluationContext context = new MethodBasedEvaluationContext(null, method, joinPoint.getArgs(), nameDiscoverer);
+                            Object parserObj = parser.parseExpression(key).getValue(context);
+                            if (parserObj != null) {
+                                builder.append(Constant.SPIT);
+                                builder.append(parserObj);
+                            }
+                        }
+                    }
+                }
+                break;
+            case DEFTL:
+                String threadKey = EasyLimiterThreadLocal.get();
+                if (threadKey != null && !threadKey.equals("")) {
+                    builder.append(Constant.SPIT);
+                    builder.append(threadKey);
+                    EasyLimiterThreadLocal.remove();
+                }
+                break;
+        }
+        return builder.toString();
     }
 }

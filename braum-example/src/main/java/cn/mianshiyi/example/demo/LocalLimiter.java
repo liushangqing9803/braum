@@ -1,4 +1,4 @@
-package cn.mianshiyi.demo;
+package cn.mianshiyi.example.demo;
 
 import cn.mianshiyi.braumclient.ratelimit.EasyLocalRateLimiter;
 import cn.mianshiyi.braumclient.ratelimit.EasyRateLimiter;

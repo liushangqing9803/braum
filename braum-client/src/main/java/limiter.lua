@@ -19,7 +19,7 @@ else
     redis.pcall('HMSET', keyPoint, 'storedPermits', tostring(storedPermits));
 end
 local spTime = nowMicros - nextFreeTicketMicros;
-if spTime > 0 then
+if spTime >= 0 then
     local newPermits = spTime / stableIntervalMicros;
     storedPermits = math.min(maxPermits, storedPermits + newPermits);
     local storedPermitsToSpend = math.min(1, storedPermits);

@@ -42,7 +42,7 @@ public class EasyRedisCalcRateLimiter extends EasyRateLimiter {
             "    redis.pcall('HMSET', keyPoint, 'storedPermits', tostring(storedPermits));\n" +
             "end\n" +
             "local spTime = nowMicros - nextFreeTicketMicros;\n" +
-            "if spTime > 0 then\n" +
+            "if spTime >= 0 then\n" +
             "    local newPermits = spTime / stableIntervalMicros;\n" +
             "    storedPermits = math.min(maxPermits, storedPermits + newPermits);\n" +
             "    local storedPermitsToSpend = math.min(1, storedPermits);\n" +

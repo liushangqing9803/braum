@@ -90,9 +90,7 @@ public class Application extends SpringBootServletInitializer {
     long timeout() default 0L;
 ```
 ### 后续支持
-1. IP维度限流
-2. IP+方法维度限流
-3. 参数表达式限流
-4. 自定维度义限流
-5. 可视化监控
-6. 限流规则运行时修改
+1. 参数表达式限流
+2. 自定维度义限流
+3. 可视化监控
+4. 限流规则运行时修改
