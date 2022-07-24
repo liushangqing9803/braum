@@ -44,7 +44,7 @@ public class Application extends SpringBootServletInitializer {
     @EasyRateLimier(value = "localException", permitsPerSecond = 0.1,blockMessage = "限流了",limiterType = LimiterType.LOCAL, limiterHandleType = LimiterHandleType.EXCEPTION)
     @EasyRateLimier(value = "localEx111ception", permitsPerSecond = 11,blockMessage = "又限流了",limiterType = LimiterType.LOCAL, limiterHandleType = LimiterHandleType.EXCEPTION)
     public String localException(User user) {
-        return "sss";
+        return "111";
     }
 ```
 
