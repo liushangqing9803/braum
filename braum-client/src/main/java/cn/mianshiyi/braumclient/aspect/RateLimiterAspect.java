@@ -11,7 +11,8 @@ import cn.mianshiyi.braumclient.ratelimit.EasyLocalRateLimiter;
 import cn.mianshiyi.braumclient.ratelimit.EasyRateLimiter;
 import cn.mianshiyi.braumclient.ratelimit.EasyRedisCalcRateLimiter;
 import cn.mianshiyi.braumclient.redis.RedisCalc;
-import cn.mianshiyi.braumclient.utils.EasyLimiterThreadLocal;
+import cn.mianshiyi.braumclient.common.EasyLimiterThreadLocal;
+import cn.mianshiyi.braumclient.utils.EasyStringUtil;
 import com.google.common.collect.Maps;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -28,6 +29,7 @@ import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 import org.springframework.stereotype.Component;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -53,20 +55,49 @@ public class RateLimiterAspect {
     public void rateLimiterAnnotationPointcut() {
     }
 
+    @Pointcut("@annotation(cn.mianshiyi.braumclient.annotation.EasyRateLimierList)")
+    public void rateLimiterAnnotationListPointcut() {
+    }
+
     @Around("rateLimiterAnnotationPointcut()")
     public Object invokeRateLimiterAspect(ProceedingJoinPoint pjp) throws Throwable {
         Method originMethod = resolveMethod(pjp);
-
-        EasyRateLimier annotation = originMethod.getAnnotation(EasyRateLimier.class);
-        if (annotation == null) {
+        Annotation[] annotations = originMethod.getAnnotationsByType(EasyRateLimier.class);
+        if (annotations.length == 0) {
             throw new IllegalStateException("Wrong state for rate limiter annotation");
         }
-        String sourceName = analysisSourceName(pjp, originMethod, annotation);
-        EasyRateLimiter rateLimiter = getReteLimiter(annotation, sourceName);
-        if (rateLimiter == null) {
-            return pjp.proceed();
+        for (Annotation annotation : annotations) {
+            if (annotation instanceof EasyRateLimier) {
+                EasyRateLimier easyRateLimierAnn = (EasyRateLimier) annotation;
+                String sourceName = analysisSourceName(pjp, originMethod, easyRateLimierAnn);
+                EasyRateLimiter rateLimiter = getReteLimiter(easyRateLimierAnn, sourceName);
+                if (rateLimiter == null) {
+                    return pjp.proceed();
+                }
+                rateLimiterExecute(easyRateLimierAnn, rateLimiter);
+            }
         }
-        rateLimiterExecute(annotation, rateLimiter);
+        return pjp.proceed();
+    }
+
+    @Around("rateLimiterAnnotationListPointcut()")
+    public Object invokeRateLimiterListAspect(ProceedingJoinPoint pjp) throws Throwable {
+        Method originMethod = resolveMethod(pjp);
+        Annotation[] annotations = originMethod.getAnnotationsByType(EasyRateLimier.class);
+        if (annotations.length == 0) {
+            throw new IllegalStateException("Wrong state for rate limiter annotation");
+        }
+        for (Annotation annotation : annotations) {
+            if (annotation instanceof EasyRateLimier) {
+                EasyRateLimier easyRateLimierAnn = (EasyRateLimier) annotation;
+                String sourceName = analysisSourceName(pjp, originMethod, easyRateLimierAnn);
+                EasyRateLimiter rateLimiter = getReteLimiter(easyRateLimierAnn, sourceName);
+                if (rateLimiter == null) {
+                    return pjp.proceed();
+                }
+                rateLimiterExecute(easyRateLimierAnn, rateLimiter);
+            }
+        }
         return pjp.proceed();
     }
 
@@ -76,12 +107,14 @@ public class RateLimiterAspect {
             case WAIT:
                 long timeout = annotation.timeout();
                 if (!rateLimiter.acquire(timeout)) {
-                    throw new RateLimitTimeoutBlockException(Constant.BLOCK_TIMEOUT_EXCEPTION_MSG);
+                    String message = EasyStringUtil.isEmpty(annotation.blockTimeoutMessage()) ? Constant.BLOCK_TIMEOUT_EXCEPTION_MSG : annotation.blockTimeoutMessage();
+                    throw new RateLimitTimeoutBlockException(message);
                 }
                 break;
             case EXCEPTION:
                 if (!rateLimiter.tryAcquire()) {
-                    throw new RateLimitBlockException(Constant.BLOCK_EXCEPTION_MSG);
+                    String message = EasyStringUtil.isEmpty(annotation.blockMessage()) ? Constant.BLOCK_EXCEPTION_MSG : annotation.blockMessage();
+                    throw new RateLimitBlockException(message);
                 }
             default:
         }

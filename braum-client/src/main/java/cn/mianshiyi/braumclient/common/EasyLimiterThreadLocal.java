@@ -1,4 +1,4 @@
-package cn.mianshiyi.braumclient.utils;
+package cn.mianshiyi.braumclient.common;
 
 /**
  * @author shangqing.liu

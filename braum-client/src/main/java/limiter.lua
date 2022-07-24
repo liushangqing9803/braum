@@ -28,7 +28,7 @@ if spTime >= 0 then
     nextFreeTicketMicros = nowMicros + waitMicros;
     storedPermits = storedPermits - storedPermitsToSpend;
     redis.pcall('HMSET', keyPoint, 'nextFreeTicketMicros', tostring(nextFreeTicketMicros), 'storedPermits', tostring(storedPermits));
-    redis.pcall('EXPIRE', keyPoint, 86400);
+    redis.pcall('EXPIRE', keyPoint, 3600);
     return 1;
 else
     if storedPermits - 1 >= 0 then

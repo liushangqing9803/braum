@@ -1,5 +1,6 @@
 package cn.mianshiyi.braumclient.annotation;
 
+import cn.mianshiyi.braumclient.common.Constant;
 import cn.mianshiyi.braumclient.enums.LimiterHandleType;
 import cn.mianshiyi.braumclient.enums.LimiterKeyType;
 import cn.mianshiyi.braumclient.enums.LimiterType;
@@ -9,6 +10,7 @@ import java.lang.annotation.*;
 /**
  * @author shangqing.liu
  */
+@Repeatable(EasyRateLimierList.class)
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
@@ -21,6 +23,7 @@ public @interface EasyRateLimier {
 
     /**
      * 限流表达式 可为空
+     * keyType为PARAM 解析
      * 如不为空，则完整限流名：资源命名+限流标识
      *
      * @return keys
@@ -50,6 +53,16 @@ public @interface EasyRateLimier {
      * RateLimitBlockException
      */
     LimiterHandleType limiterHandleType() default LimiterHandleType.EXCEPTION;
+
+    /**
+     * 限流异常提示消息
+     */
+    String blockMessage() default Constant.BLOCK_EXCEPTION_MSG;
+
+    /**
+     * 限流超时异常提示消息
+     */
+    String blockTimeoutMessage() default Constant.BLOCK_TIMEOUT_EXCEPTION_MSG;
 
     /**
      * 如果限流处理类型为 WAIT ,则默认有效
