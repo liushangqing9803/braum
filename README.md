@@ -40,6 +40,12 @@ public class Application extends SpringBootServletInitializer {
     public String global() {
         return "111";
     }
+    //注解支持多个限流规则
+    @EasyRateLimier(value = "localException", permitsPerSecond = 0.1,blockMessage = "限流了",limiterType = LimiterType.LOCAL, limiterHandleType = LimiterHandleType.EXCEPTION)
+    @EasyRateLimier(value = "localEx111ception", permitsPerSecond = 11,blockMessage = "又限流了",limiterType = LimiterType.LOCAL, limiterHandleType = LimiterHandleType.EXCEPTION)
+    public String localException(User user) {
+        return "sss";
+    }
 ```
 
 #### 分布式限流
