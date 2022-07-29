@@ -1,0 +1,94 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <title>ECharts</title>
+    <!-- 引入刚刚下载的 ECharts 文件 -->
+    <script> let rootPath="[[${rootPath}]]";</script>
+    <script th:src="@{/static/js/jquery.js}"></script>
+    <script th:src="@{/static/js/echarts.js}"></script>
+
+</head>
+<body>
+<!-- 为 ECharts 准备一个定义了宽高的 DOM -->
+<div id="main" style="width: 100%;height:400px;"></div>
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+    $.ajax({
+        type: "POST",
+        dataType: "json",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        url: rootPath + "/limiterDataController/query",
+        async: false,
+        success: function (res) {
+            if (res.errcode !== 0) {
+                layer.msg(res.errmsg, {icon: 2, time: 1000});
+                return;
+            } else {
+                console.log(res)
+              var data=  res.data;
+                // 指定图表的配置项和数据
+                var option = {
+                    title: {
+                        text:  data.name
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: ['LimiterTotal', 'limiterBlock']
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    toolbox: {
+                        feature: {
+                            saveAsImage: {}
+                        }
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: data.times
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [
+                        {
+                            name: 'LimiterTotal',
+                            type: 'line',
+
+                            data: data.limiterTotal
+                        },
+                        {
+                            name: 'limiterBlock',
+                            type: 'line',
+
+                            data: data.limiterBlock
+                        }
+                    ]
+                };
+
+                // 使用刚指定的配置项和数据显示图表。
+                myChart.setOption(option);
+            }
+        },
+        error: function (e) {
+            console.log(e)
+            return;
+        }
+
+    });
+
+</script>
+</body>
+</html>

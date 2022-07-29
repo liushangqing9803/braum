@@ -12,7 +12,7 @@ public class RedisCalcImpl implements RedisCalc {
 
     @Override
     public Object eval(String luaValue, String key1, String value1, String key2, String value2) {
-        Jedis jedis = new Jedis("127.0.01", 6379);
+        Jedis jedis = new Jedis("127.0.0.1", 6379);
         jedis.auth("xxxx");
         return jedis.eval(luaValue, 2, key1, key2, value1,value2);
     }

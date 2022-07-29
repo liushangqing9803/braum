@@ -1,5 +1,6 @@
 package cn.mianshiyi.braumclient.ratelimit;
 
+import cn.mianshiyi.braumclient.monitor.EasyLimiterMonitorUtil;
 import com.google.common.base.Stopwatch;
 
 import java.util.concurrent.TimeUnit;
@@ -45,11 +46,13 @@ public class EasyLocalRateLimiter extends EasyRateLimiter {
     @Override
     public boolean acquire(long timeout) {
         long currentTime = this.stopwatch.elapsed(TimeUnit.MILLISECONDS);
-        if (tryAcquire()) {
+        if (tryAcquireInner()) {
+            EasyLimiterMonitorUtil.handle(this.pointName, true);
             return true;
         }
         while (this.stopwatch.elapsed(TimeUnit.MILLISECONDS) - currentTime < timeout) {
-            if (tryAcquire()) {
+            if (tryAcquireInner()) {
+                EasyLimiterMonitorUtil.handle(this.pointName, true);
                 return true;
             }
             try {
@@ -58,11 +61,18 @@ public class EasyLocalRateLimiter extends EasyRateLimiter {
                 e.printStackTrace();
             }
         }
+        EasyLimiterMonitorUtil.handle(this.pointName, false);
         return false;
     }
 
     @Override
     public boolean tryAcquire() {
+        boolean acquire = tryAcquireInner();
+        EasyLimiterMonitorUtil.handle(this.pointName, acquire);
+        return acquire;
+    }
+
+    private boolean tryAcquireInner() {
         //计算池子中可用令牌
         synchronized (lock) {
             long nowMicros = this.stopwatch.elapsed(TimeUnit.MICROSECONDS);
@@ -80,4 +90,6 @@ public class EasyLocalRateLimiter extends EasyRateLimiter {
             return false;
         }
     }
+
+
 }

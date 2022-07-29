@@ -18,8 +18,8 @@ public class TestController {
 
     @RequestMapping("/localException")
     @ResponseBody
-    @EasyRateLimier(value = "localException", permitsPerSecond = 0.1,blockMessage = "出错了",limiterType = LimiterType.LOCAL, limiterHandleType = LimiterHandleType.EXCEPTION)
-    @EasyRateLimier(value = "localEx111ception", permitsPerSecond = 0.1,blockMessage = "出错了111",limiterType = LimiterType.LOCAL, limiterHandleType = LimiterHandleType.EXCEPTION)
+    @EasyRateLimier(value = "localException", permitsPerSecond = 20,blockMessage = "出错了",limiterType = LimiterType.LOCAL, limiterHandleType = LimiterHandleType.EXCEPTION)
+    @EasyRateLimier(value = "localException222", permitsPerSecond = 0.1,blockMessage = "出错了111",limiterType = LimiterType.LOCAL, limiterHandleType = LimiterHandleType.EXCEPTION)
     public String localException(@RequestBody User user) {
         return "sss";
     }
@@ -33,7 +33,7 @@ public class TestController {
 
     @RequestMapping("/distException")
     @ResponseBody
-    @EasyRateLimier(value = "distException", permitsPerSecond = 100, limiterType = LimiterType.DIST, limiterHandleType = LimiterHandleType.EXCEPTION)
+    @EasyRateLimier(value = "distException", permitsPerSecond = 10, limiterType = LimiterType.DIST, limiterHandleType = LimiterHandleType.EXCEPTION)
     public String distException(@RequestBody User user) {
         return "sss";
     }

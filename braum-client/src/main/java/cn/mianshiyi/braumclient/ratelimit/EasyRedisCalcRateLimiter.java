@@ -1,5 +1,6 @@
 package cn.mianshiyi.braumclient.ratelimit;
 
+import cn.mianshiyi.braumclient.monitor.EasyLimiterMonitorUtil;
 import cn.mianshiyi.braumclient.redis.RedisCalc;
 import com.google.common.base.Stopwatch;
 
@@ -95,11 +96,13 @@ public class EasyRedisCalcRateLimiter extends EasyRateLimiter {
     @Override
     public boolean acquire(long timeout) {
         long currentTime = this.stopwatch.elapsed(TimeUnit.MILLISECONDS);
-        if (tryAcquire()) {
+        if (tryAcquireInner()) {
+            EasyLimiterMonitorUtil.handle(this.pointName, true);
             return true;
         }
         while (this.stopwatch.elapsed(TimeUnit.MILLISECONDS) - currentTime < timeout) {
-            if (tryAcquire()) {
+            if (tryAcquireInner()) {
+                EasyLimiterMonitorUtil.handle(this.pointName, true);
                 return true;
             }
             try {
@@ -108,11 +111,18 @@ public class EasyRedisCalcRateLimiter extends EasyRateLimiter {
                 e.printStackTrace();
             }
         }
+        EasyLimiterMonitorUtil.handle(this.pointName, false);
         return false;
     }
 
     @Override
     public boolean tryAcquire() {
+        boolean acquire = tryAcquireInner();
+        EasyLimiterMonitorUtil.handle(this.pointName, acquire);
+        return acquire;
+    }
+
+    private boolean tryAcquireInner() {
         Long eval = (Long) redisCalc.eval(lua, this.pointName, String.valueOf(this.stableIntervalMicros), this.pointName, String.valueOf(this.maxPermits));
         //执行redis脚本 -1 代表失败 1代表成功
         return eval != null && eval > 0;

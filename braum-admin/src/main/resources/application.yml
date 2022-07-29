@@ -1,0 +1,41 @@
+spring:
+  http:
+    encoding:
+      force: true
+      charset: UTF-8
+      enabled: true
+  mvc: #静态文件
+    static-path-pattern: /static/**
+    #模板引擎
+  thymeleaf:
+    model: HTML5
+    prefix: classpath:/templates/
+    suffix: .html
+    #指定编码
+    encoding: utf-8
+    #禁用缓存 默认false
+    cache: false
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/braum?useSSL=false&useUnicode=true&characterEncoding=utf8
+    username: root
+    password: root
+    driverClassName: com.mysql.jdbc.Driver
+    initialSize: 20
+    minIdle: 20
+    maxActive: 300
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    maxWait: 60000
+    filters: stat,wall,logback
+    connectionProperties: =druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+server:
+  tomcat:
+    uri-encoding: UTF-8

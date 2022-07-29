@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mianshiyi.braumadmin.mapper.LimiterDataMapper">
+
+    <!-- 所有查询字段 -->
+    <sql id="allSelectionColumn">
+        id,
+        name,
+        occ_second occSecond,
+        exec_count execCount,
+        block_count blockCount,
+        create_time createTime
+    </sql>
+
+    <!-- 根据ID查询实体数据 -->
+    <select id="findById" parameterType="Long" resultType="cn.mianshiyi.braumadmin.entity.LimiterDataEntity">
+        SELECT
+        <include refid="allSelectionColumn"/>
+        FROM limiter_data WHERE id = #{id}
+    </select>
+
+
+    <select id="findByNameAndTime" resultType="cn.mianshiyi.braumadmin.entity.LimiterDataEntity">
+        SELECT
+        <include refid="allSelectionColumn"/>
+        FROM limiter_data WHERE name=#{name} and occ_second=#{time}
+    </select>
+
+
+    <select id="findByQo" parameterType="cn.mianshiyi.braumadmin.entity.qo.LimiterDataQo"
+            resultType="cn.mianshiyi.braumadmin.entity.LimiterDataEntity">
+        SELECT
+        <include refid="allSelectionColumn"/>
+        FROM limiter_data
+        <where>
+            <if test="name!=null">
+                and name=#{name}
+            </if>
+
+            <if test="start!=null">
+                and occ_second &lt; #{end}
+                and occ_second >#{start}
+            </if>
+
+        </where>
+    </select>
+
+    <!-- 添加数据 -->
+    <insert id="insert" parameterType="cn.mianshiyi.braumadmin.entity.LimiterDataEntity" keyProperty="id"
+            useGeneratedKeys="true">
+        INSERT INTO limiter_data(
+        id,
+        name,
+        occ_second,
+        exec_count,
+        block_count,
+        create_time,
+        client_ip
+        )VALUES(
+        #{id},
+        #{name},
+        #{occSecond},
+        #{execCount},
+        #{blockCount},
+        #{createTime},
+        #{clientIp}
+        )
+    </insert>
+
+
+    <!-- 批量添加数据 -->
+    <insert id="insertBatch" parameterType="cn.mianshiyi.braumadmin.entity.LimiterDataEntity" keyProperty="id"
+            useGeneratedKeys="true">
+        INSERT INTO limiter_data(
+        id,
+        name,
+        occ_second,
+        exec_count,
+        block_count,
+        create_time
+        )VALUES
+        <foreach collection="listEntity" item="entity" separator=",">
+            (
+            #{id},
+            #{name},
+            #{occSecond},
+            #{execCount},
+            #{blockCount},
+            #{createTime} )
+        </foreach>
+    </insert>
+
+
+    <!-- 根据ID更新信息-->
+    <update id="updateById" parameterType="cn.mianshiyi.braumadmin.entity.LimiterDataEntity">
+        UPDATE limiter_data SET
+        <if test="occSecond != null ">
+            occ_second = #{occSecond},
+        </if>
+        <if test="execCount != null ">
+            exec_count = #{execCount},
+        </if>
+        <if test="blockCount != null ">
+            block_count = #{blockCount},
+        </if>
+        <if test="createTime != null
+            ">
+            create_time = #{createTime}
+        </if>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据ID删除数据-->
+    <delete id="deleteById" parameterType="Long">
+        DELETE FROM limiter_data WHERE id = #{id}
+    </delete>
+</mapper>
+
