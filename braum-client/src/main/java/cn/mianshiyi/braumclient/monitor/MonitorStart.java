@@ -1,8 +1,6 @@
 package cn.mianshiyi.braumclient.monitor;
 
-import com.alibaba.fastjson.JSON;
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -11,15 +9,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
-import io.netty.util.CharsetUtil;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.Collection;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author shangqing.liu
@@ -43,10 +35,6 @@ public class MonitorStart {
             }
         }).start();
     }
-
-    ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
-
-    public static Channel CHANNEL = null;
 
     public void start() throws Exception {
 
@@ -73,23 +61,8 @@ public class MonitorStart {
             final ChannelFuture channelFuture = bootstrap.connect(split[0], Integer.parseInt(split[1])).sync();
 
             Channel channel = channelFuture.channel();
-            CHANNEL = channel;
-            scheduledThreadPoolExecutor.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Collection<LimiterMonitorEntity> calc = EasyLimiterMonitorUtil.calc();
-                        if (calc == null) {
-                            return;
-                        }
-                        RemoteMessage<Collection<LimiterMonitorEntity>> remoteMessage = new RemoteMessage(10, calc);
-                        channel.writeAndFlush(Unpooled.copiedBuffer(JSON.toJSONString(remoteMessage) + "\n", CharsetUtil.UTF_8));
-                    } catch (Exception e) {
-                        System.out.println(e);
-                    }
+            MonitorContext.CHANNEL = channel;
 
-                }
-            }, 1000, 1000, TimeUnit.MILLISECONDS);
             //对关闭通道进行监听
             channelFuture.channel().closeFuture().sync();
         } finally {

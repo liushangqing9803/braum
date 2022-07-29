@@ -2,11 +2,16 @@ package cn.mianshiyi.braumclient.monitor;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author shangqing.liu
  */
 public class NettyClientHandler extends ChannelInboundHandlerAdapter {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(NettyClientHandler.class);
+
     //当通道就绪就会触发该方法
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
@@ -16,7 +21,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         String buf = (String) msg;
-        System.out.println("服务器回复的数据： " + buf);
+        LOGGER.info("easyLimiter监控上报服务器回复的数据： " + buf);
     }
 
     @Override

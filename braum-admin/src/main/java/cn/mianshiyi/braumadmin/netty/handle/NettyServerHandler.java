@@ -5,8 +5,10 @@ import cn.mianshiyi.braumadmin.entity.RemoteCode;
 import cn.mianshiyi.braumadmin.service.LimiterDataService;
 import cn.mianshiyi.braumadmin.utils.SpringUtil;
 import cn.mianshiyi.braumclient.monitor.LimiterMonitorEntity;
+import cn.mianshiyi.braumclient.monitor.LimiterMonitorRegisterEntity;
 import cn.mianshiyi.braumclient.monitor.RemoteMessage;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.netty.buffer.Unpooled;
@@ -16,7 +18,6 @@ import io.netty.util.CharsetUtil;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -44,11 +45,12 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
             String buf = (String) msg;
             System.out.println("收到" + buf);
 
-            RemoteMessage<Collection<LimiterMonitorEntity>> list = JSON.parseObject(buf, new TypeReference<RemoteMessage<Collection<LimiterMonitorEntity>>>() {
-            });
-            int code = list.getCode();
+            JSONObject jsonObject = JSON.parseObject(buf);
+            int code = Integer.parseInt(jsonObject.get("code").toString());
             switch (code) {
                 case RemoteCode.MONITOR_CODE:
+                    RemoteMessage<Collection<LimiterMonitorEntity>> list = JSON.parseObject(buf, new TypeReference<RemoteMessage<Collection<LimiterMonitorEntity>>>() {
+                    });
                     for (LimiterMonitorEntity limiterMonitorEntity : list.getData()) {
                         LimiterDataEntity entity = new LimiterDataEntity();
                         entity.setName(limiterMonitorEntity.getName());
@@ -62,6 +64,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
                     }
                     break;
                 case RemoteCode.NAME_REGISTER_CODE:
+                    RemoteMessage<LimiterMonitorRegisterEntity> remoteMessage = JSON.parseObject(buf, new TypeReference<RemoteMessage<LimiterMonitorRegisterEntity>>() {
+                    });
+                    //TODO
                     break;
             }
         });

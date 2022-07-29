@@ -2,6 +2,7 @@ package cn.mianshiyi.braumclient.aspect;
 
 import cn.mianshiyi.braumclient.annotation.EasyRateLimier;
 import cn.mianshiyi.braumclient.common.Constant;
+import cn.mianshiyi.braumclient.common.EasyLimiterThreadLocal;
 import cn.mianshiyi.braumclient.enums.LimiterHandleType;
 import cn.mianshiyi.braumclient.enums.LimiterKeyType;
 import cn.mianshiyi.braumclient.enums.LimiterType;
@@ -11,7 +12,6 @@ import cn.mianshiyi.braumclient.ratelimit.EasyLocalRateLimiter;
 import cn.mianshiyi.braumclient.ratelimit.EasyRateLimiter;
 import cn.mianshiyi.braumclient.ratelimit.EasyRedisCalcRateLimiter;
 import cn.mianshiyi.braumclient.redis.RedisCalc;
-import cn.mianshiyi.braumclient.common.EasyLimiterThreadLocal;
 import cn.mianshiyi.braumclient.utils.EasyStringUtil;
 import com.google.common.collect.Maps;
 import org.aspectj.lang.JoinPoint;
@@ -20,6 +20,8 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.expression.MethodBasedEvaluationContext;
 import org.springframework.core.DefaultParameterNameDiscoverer;
@@ -39,6 +41,9 @@ import java.util.Map;
 @Aspect
 @Component
 public class RateLimiterAspect {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RateLimiterAspect.class);
+
 
     private static final Map<String, EasyRateLimiter> RATE_LIMITER_MAP = Maps.newConcurrentMap();
 
@@ -124,7 +129,7 @@ public class RateLimiterAspect {
         double permitsPerSecond = annotation.permitsPerSecond();
         LimiterType limiterType = annotation.limiterType();
         if (sourceName == null || sourceName.equals("")) {
-            //TODO 打印日志
+            LOGGER.error("easyLimiter name is null");
             return null;
         }
         return buildRateLimiter(sourceName, permitsPerSecond, limiterType);

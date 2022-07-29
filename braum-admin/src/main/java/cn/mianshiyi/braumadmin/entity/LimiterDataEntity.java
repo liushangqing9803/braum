@@ -22,7 +22,6 @@ public class LimiterDataEntity {
      */
     private String clientIp;
 
-
     /**
      * 发生时间-秒数
      */

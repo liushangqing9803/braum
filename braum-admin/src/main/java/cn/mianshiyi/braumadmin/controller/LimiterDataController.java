@@ -3,7 +3,7 @@ package cn.mianshiyi.braumadmin.controller;
 import cn.mianshiyi.braumadmin.entity.APIResponse;
 import cn.mianshiyi.braumadmin.entity.LimiterDataEntity;
 import cn.mianshiyi.braumadmin.entity.qo.LimiterDataQo;
-import cn.mianshiyi.braumadmin.entity.vo.LimiterDataVo;
+import cn.mianshiyi.braumadmin.entity.vo.LimiterDataView;
 import cn.mianshiyi.braumadmin.service.LimiterDataService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,12 +35,12 @@ public class LimiterDataController {
     @ResponseBody
     public APIResponse find(LimiterDataQo qo) {
         LimiterDataQo limiterDataQo = new LimiterDataQo();
-        limiterDataQo.setName("EASY_LIMITER_distException");
+        limiterDataQo.setName("EASY_LIMITER_localException");
         limiterDataQo.setStart(System.currentTimeMillis() / 1000 - 60);
         limiterDataQo.setEnd(System.currentTimeMillis() / 1000 + 60);
 
-        LimiterDataVo vo = limiterDataService.findByQo(limiterDataQo);
-        return APIResponse.returnSuccess(vo);
+        LimiterDataView byQo = limiterDataService.findByQo(limiterDataQo);
+        return APIResponse.returnSuccess(byQo);
     }
 
     @GetMapping("/test11")

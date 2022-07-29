@@ -1,6 +1,6 @@
 package cn.mianshiyi.braumclient.ratelimit;
 
-import cn.mianshiyi.braumclient.monitor.EasyLimiterMonitorUtil;
+import cn.mianshiyi.braumclient.monitor.MonitorContext;
 import com.google.common.base.Stopwatch;
 
 import java.util.concurrent.TimeUnit;
@@ -33,6 +33,7 @@ public class EasyLocalRateLimiter extends EasyRateLimiter {
             this.doSetRate(permitsPerSecond, this.stopwatch.elapsed(TimeUnit.MICROSECONDS));
         }
         this.pointName = pointName;
+        MonitorContext.register(pointName);
         return this;
     }
 
@@ -47,12 +48,12 @@ public class EasyLocalRateLimiter extends EasyRateLimiter {
     public boolean acquire(long timeout) {
         long currentTime = this.stopwatch.elapsed(TimeUnit.MILLISECONDS);
         if (tryAcquireInner()) {
-            EasyLimiterMonitorUtil.handle(this.pointName, true);
+            MonitorContext.handle(this.pointName, true);
             return true;
         }
         while (this.stopwatch.elapsed(TimeUnit.MILLISECONDS) - currentTime < timeout) {
             if (tryAcquireInner()) {
-                EasyLimiterMonitorUtil.handle(this.pointName, true);
+                MonitorContext.handle(this.pointName, true);
                 return true;
             }
             try {
@@ -61,14 +62,14 @@ public class EasyLocalRateLimiter extends EasyRateLimiter {
                 e.printStackTrace();
             }
         }
-        EasyLimiterMonitorUtil.handle(this.pointName, false);
+        MonitorContext.handle(this.pointName, false);
         return false;
     }
 
     @Override
     public boolean tryAcquire() {
         boolean acquire = tryAcquireInner();
-        EasyLimiterMonitorUtil.handle(this.pointName, acquire);
+        MonitorContext.handle(this.pointName, acquire);
         return acquire;
     }
 

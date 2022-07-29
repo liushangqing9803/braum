@@ -1,16 +1,18 @@
 package cn.mianshiyi.braumadmin.entity.vo;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author shangqing.liu
  */
-public class LimiterDataVo {
+public class LimiterDataDetailVo {
     private String name;
     private List<String> times = new ArrayList<>();
-    private List<String> limiterTotal = new ArrayList<>();
-    private List<String> limiterBlock = new ArrayList<>();
+    private Set<String> lineName = new HashSet<>();
+    private List<LimiterDataDetailValue> data = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -28,19 +30,19 @@ public class LimiterDataVo {
         this.times = times;
     }
 
-    public List<String> getLimiterTotal() {
-        return limiterTotal;
+    public Set<String> getLineName() {
+        return lineName;
     }
 
-    public void setLimiterTotal(List<String> limiterTotal) {
-        this.limiterTotal = limiterTotal;
+    public void setLineName(Set<String> lineName) {
+        this.lineName = lineName;
     }
 
-    public List<String> getLimiterBlock() {
-        return limiterBlock;
+    public List<LimiterDataDetailValue> getData() {
+        return data;
     }
 
-    public void setLimiterBlock(List<String> limiterBlock) {
-        this.limiterBlock = limiterBlock;
+    public void setData(List<LimiterDataDetailValue> data) {
+        this.data = data;
     }
 }

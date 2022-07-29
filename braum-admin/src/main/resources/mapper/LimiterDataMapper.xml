@@ -9,7 +9,8 @@
         occ_second occSecond,
         exec_count execCount,
         block_count blockCount,
-        create_time createTime
+        create_time createTime,
+        client_ip clientIp
     </sql>
 
     <!-- 根据ID查询实体数据 -->

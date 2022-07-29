@@ -1,10 +1,10 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8"/>
     <title>ECharts</title>
     <!-- 引入刚刚下载的 ECharts 文件 -->
-    <script> let rootPath="[[${rootPath}]]";</script>
+    <script> let rootPath = "[[${rootPath}]]";</script>
     <script th:src="@{/static/js/jquery.js}"></script>
     <script th:src="@{/static/js/echarts.js}"></script>
 
@@ -12,9 +12,11 @@
 <body>
 <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
 <div id="main" style="width: 100%;height:400px;"></div>
+<div id="detail" style="width: 100%;height:400px;"></div>
 <script type="text/javascript">
     // 基于准备好的dom，初始化echarts实例
     var myChart = echarts.init(document.getElementById('main'));
+    var myChartDetail = echarts.init(document.getElementById('detail'));
 
     $.ajax({
         type: "POST",
@@ -31,11 +33,11 @@
                 return;
             } else {
                 console.log(res)
-              var data=  res.data;
+                var data = res.data;
                 // 指定图表的配置项和数据
                 var option = {
                     title: {
-                        text:  data.name
+                        text: data.limiterDataTotalVo.name
                     },
                     tooltip: {
                         trigger: 'axis'
@@ -57,7 +59,7 @@
                     xAxis: {
                         type: 'category',
                         boundaryGap: false,
-                        data: data.times
+                        data: data.limiterDataTotalVo.times
                     },
                     yAxis: {
                         type: 'value'
@@ -66,20 +68,52 @@
                         {
                             name: 'LimiterTotal',
                             type: 'line',
-
-                            data: data.limiterTotal
+                            data: data.limiterDataTotalVo.limiterTotal
                         },
                         {
                             name: 'limiterBlock',
                             type: 'line',
-
-                            data: data.limiterBlock
+                            data: data.limiterDataTotalVo.limiterBlock
                         }
                     ]
                 };
 
+
+                var detailOption = {
+                    title: {
+                        text: data.limiterDataDetailVo.name
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data:data.limiterDataDetailVo.lineName
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    toolbox: {
+                        feature: {
+                            saveAsImage: {}
+                        }
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: data.limiterDataDetailVo.times
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series:data.limiterDataDetailVo.data
+                };
+
                 // 使用刚指定的配置项和数据显示图表。
                 myChart.setOption(option);
+                myChartDetail.setOption(detailOption);
             }
         },
         error: function (e) {

@@ -2,7 +2,7 @@ package cn.mianshiyi.braumadmin.service;
 
 import cn.mianshiyi.braumadmin.entity.LimiterDataEntity;
 import cn.mianshiyi.braumadmin.entity.qo.LimiterDataQo;
-import cn.mianshiyi.braumadmin.entity.vo.LimiterDataVo;
+import cn.mianshiyi.braumadmin.entity.vo.LimiterDataView;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface LimiterDataService {
 
-    LimiterDataVo findByQo(LimiterDataQo qo);
+    LimiterDataView findByQo(LimiterDataQo qo);
 
     LimiterDataEntity findByNameAndTime(String name , Long time);
 
