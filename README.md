@@ -51,6 +51,7 @@ public class Application extends SpringBootServletInitializer {
     public String localException(User user) {
         return "111";
     }
+    //更多示例参考 braum-example
 ```
 
 #### 分布式限流
