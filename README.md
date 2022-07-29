@@ -12,7 +12,7 @@
 6. 等待获取token
 7. **注解支持同一个方法多个限流规则**
 8. 监控看板
-<img width="1487" alt="image" src="https://user-images.githubusercontent.com/30620322/181673649-790c791d-11b2-46ca-a2bb-9606f5b15243.png">
+<img width="1281" alt="image" src="https://user-images.githubusercontent.com/30620322/181720209-a1b9d0cd-4694-48bd-a10e-30ce96d14abc.png">
 
 
 ### 使用方式：
