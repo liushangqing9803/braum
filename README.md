@@ -11,6 +11,9 @@
 5. 限流立即返回异常
 6. 等待获取token
 7. **注解支持同一个方法多个限流规则**
+8. 监控看板
+<img width="1487" alt="image" src="https://user-images.githubusercontent.com/30620322/181673649-790c791d-11b2-46ca-a2bb-9606f5b15243.png">
+
 
 ### 使用方式：
 jdk1.8+
