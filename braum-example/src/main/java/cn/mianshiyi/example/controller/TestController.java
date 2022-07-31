@@ -18,7 +18,7 @@ public class TestController {
 
     @RequestMapping("/localException")
     @ResponseBody
-    @EasyRateLimier(value = "localException", permitsPerSecond = 20,blockMessage = "出错了",limiterType = LimiterType.LOCAL, limiterHandleType = LimiterHandleType.EXCEPTION)
+    @EasyRateLimier(value = "localException", permitsPerSecond = 1000,blockMessage = "出错了",limiterType = LimiterType.LOCAL, limiterHandleType = LimiterHandleType.EXCEPTION)
     @EasyRateLimier(value = "localException222", permitsPerSecond = 0.1,blockMessage = "出错了111",limiterType = LimiterType.LOCAL, limiterHandleType = LimiterHandleType.EXCEPTION)
     public String localException(@RequestBody User user) {
         return "sss";

@@ -5,123 +5,59 @@
     <title>ECharts</title>
     <!-- 引入刚刚下载的 ECharts 文件 -->
     <script> let rootPath = "[[${rootPath}]]";</script>
+    <script th:src="@{/static/js/layui/layui.js}"></script>
     <script th:src="@{/static/js/jquery.js}"></script>
     <script th:src="@{/static/js/echarts.js}"></script>
+    <script th:src="@{/static/js/viewLabel.js}"></script>
+    <link th:href="@{/static/js/layui/css/layui.css}" rel="stylesheet">
 
 </head>
 <body>
-<!-- 为 ECharts 准备一个定义了宽高的 DOM -->
-<div id="main" style="width: 100%;height:400px;"></div>
-<div id="detail" style="width: 100%;height:400px;"></div>
+
+
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div class="" style="margin: 1%">
+        <div class="layui-row">
+            <form id="limiterSearch" class="layui-form layui-form-pane" method="post" action="" style="margin-top: 20px;">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">限流名称：</label>
+                        <div class="layui-input-inline">
+                            <input id="limiterName" name="limiterName"  style="width: 300px" class="layui-input" type="text"/>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">时间：</label>
+                        <div class="layui-input-inline" style="width: 175px;">
+                            <input name="startTime" id="startTime" placeholder="开始时间" autocomplete="off"
+                                   class="layui-input" type="text"/>
+                        </div>
+                        <div class="layui-form-mid">-</div>
+                        <div class="layui-input-inline" style="width: 175px;">
+                            <input name="endTime" id="endTime" placeholder="结束时间" autocomplete="off"
+                                   class="layui-input" type="text"/>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="reset" class="layui-btn layui-btn-primary"><i class="layui-icon">&#xe66a;</i>清空
+                            </button>
+                            <button class="layui-btn" lay-submit="" lay-filter="searchSubmit"><i class="layui-icon">&#xe615;</i>搜索
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+        <hr class="layui-bg-black"/>
+        <!-- 为 ECharts 准备一个定义了宽高的 DOM -->
+        <div id="main" style="width: 100%;height:400px;"></div>
+        <div id="detail" style="width: 100%;height:400px;"></div>
+    </div>
+
+</div>
+
 <script type="text/javascript">
-    // 基于准备好的dom，初始化echarts实例
-    var myChart = echarts.init(document.getElementById('main'));
-    var myChartDetail = echarts.init(document.getElementById('detail'));
-
-    $.ajax({
-        type: "POST",
-        dataType: "json",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        url: rootPath + "/limiterDataController/query",
-        async: false,
-        success: function (res) {
-            if (res.errcode !== 0) {
-                layer.msg(res.errmsg, {icon: 2, time: 1000});
-                return;
-            } else {
-                console.log(res)
-                var data = res.data;
-                // 指定图表的配置项和数据
-                var option = {
-                    title: {
-                        text: data.limiterDataTotalVo.name
-                    },
-                    tooltip: {
-                        trigger: 'axis'
-                    },
-                    legend: {
-                        data: ['LimiterTotal', 'limiterBlock']
-                    },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        containLabel: true
-                    },
-                    toolbox: {
-                        feature: {
-                            saveAsImage: {}
-                        }
-                    },
-                    xAxis: {
-                        type: 'category',
-                        boundaryGap: false,
-                        data: data.limiterDataTotalVo.times
-                    },
-                    yAxis: {
-                        type: 'value'
-                    },
-                    series: [
-                        {
-                            name: 'LimiterTotal',
-                            type: 'line',
-                            data: data.limiterDataTotalVo.limiterTotal
-                        },
-                        {
-                            name: 'limiterBlock',
-                            type: 'line',
-                            data: data.limiterDataTotalVo.limiterBlock
-                        }
-                    ]
-                };
-
-
-                var detailOption = {
-                    title: {
-                        text: data.limiterDataDetailVo.name
-                    },
-                    tooltip: {
-                        trigger: 'axis'
-                    },
-                    legend: {
-                        data:data.limiterDataDetailVo.lineName
-                    },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        containLabel: true
-                    },
-                    toolbox: {
-                        feature: {
-                            saveAsImage: {}
-                        }
-                    },
-                    xAxis: {
-                        type: 'category',
-                        boundaryGap: false,
-                        data: data.limiterDataDetailVo.times
-                    },
-                    yAxis: {
-                        type: 'value'
-                    },
-                    series:data.limiterDataDetailVo.data
-                };
-
-                // 使用刚指定的配置项和数据显示图表。
-                myChart.setOption(option);
-                myChartDetail.setOption(detailOption);
-            }
-        },
-        error: function (e) {
-            console.log(e)
-            return;
-        }
-
-    });
 
 </script>
 </body>

@@ -34,8 +34,8 @@
         <include refid="allSelectionColumn"/>
         FROM limiter_data
         <where>
-            <if test="name!=null">
-                and name=#{name}
+            <if test="limiterName!=null">
+                and name=#{limiterName}
             </if>
 
             <if test="start!=null">
@@ -73,21 +73,22 @@
     <insert id="insertBatch" parameterType="cn.mianshiyi.braumadmin.entity.LimiterDataEntity" keyProperty="id"
             useGeneratedKeys="true">
         INSERT INTO limiter_data(
-        id,
         name,
         occ_second,
         exec_count,
         block_count,
-        create_time
+        create_time,
+        client_ip
         )VALUES
         <foreach collection="listEntity" item="entity" separator=",">
             (
-            #{id},
-            #{name},
-            #{occSecond},
-            #{execCount},
-            #{blockCount},
-            #{createTime} )
+            #{entity.name},
+            #{entity.occSecond},
+            #{entity.execCount},
+            #{entity.blockCount},
+            #{entity.createTime},
+            #{entity.clientIp}
+            )
         </foreach>
     </insert>
 

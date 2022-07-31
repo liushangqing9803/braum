@@ -1,6 +1,7 @@
 package cn.mianshiyi.braumadmin.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
@@ -9,8 +10,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class GatewayController {
 
+    @GetMapping("/index")
+    public String index() {
+        return "index";
+    }
+
     @GetMapping("/viewLabel")
-    public String global() {
+    public String global(String name, ModelMap map) {
+        map.put("limitName", name);
         return "viewLabel";
     }
 }

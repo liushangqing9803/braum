@@ -60,7 +60,8 @@ public class NettyServerStart implements ApplicationRunner {
                     });//给 workerGroup 的EventLoop对应的管道设置处理器
             //启动服务器，并绑定端口并且同步
             ChannelFuture channelFuture = serverBootstrap.bind(6999).sync();
-
+            //处理消息线程
+            NettyServerHandler.initConsumerData();
             //对关闭通道进行监听
             channelFuture.channel().closeFuture().sync();
         } finally {
@@ -68,5 +69,6 @@ public class NettyServerStart implements ApplicationRunner {
             workerGroup.shutdownGracefully();
         }
     }
+
 
 }

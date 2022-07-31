@@ -47,10 +47,10 @@ public class LimiterDataServiceImpl implements LimiterDataService {
         }
 
         LimiterDataTotalVo vo = new LimiterDataTotalVo();
-        vo.setName(qo.getName() + "-total");
+        vo.setName(qo.getLimiterName() + "-total");
 
         LimiterDataDetailVo detailVo = new LimiterDataDetailVo();
-        detailVo.setName(qo.getName() + "-detail");
+        detailVo.setName(qo.getLimiterName() + "-detail");
 
 
         Long start = qo.getStart();

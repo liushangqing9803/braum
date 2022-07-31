@@ -1,0 +1,45 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8"/>
+    <title>ECharts</title>
+    <!-- 引入刚刚下载的 ECharts 文件 -->
+    <script> let rootPath = "[[${rootPath}]]";</script>
+    <script th:src="@{/static/js/jquery.js}"></script>
+    <script th:src="@{/static/js/layui/layui.js}"></script>
+    <script th:src="@{/static/js/index.js}"></script>
+    <link th:href="@{/static/js/layui/css/layui.css}" rel="stylesheet">
+
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div class="" style="margin: 1%">
+
+        <form id="userSearch" class="layui-form layui-form-pane" method="post" action="" style="margin-top: 20px;">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">限流名称：</label>
+                    <div class="layui-input-inline">
+                        <input id="orderNo" name="orderNo" autocomplete="off" class="layui-input" type="text"/>
+                    </div>
+                    <button class="layui-btn" lay-submit="" lay-filter="searchSubmit"><i class="layui-icon">&#xe615;</i>搜索
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <hr class="layui-bg-black"/>
+        <table id="tableList" lay-filter="tableFilter"></table>
+        <script type="text/html" id="optBar">
+            <a class="layui-btn layui-btn-xs" lay-event="view">查看</a>
+        </script>
+    </div>
+
+
+    <script>
+
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mianshiyi.braumadmin.mapper.LimiterRegisterInfoMapper" >
+
+    <!-- 所有查询字段 -->
+    <sql id="allSelectionColumn">
+        id,
+        name
+    </sql>
+
+    <!-- 根据ID查询实体数据 -->
+    <select id="findById" parameterType="Long" resultType="cn.mianshiyi.braumadmin.entity.LimiterRegisterInfoEntity">
+        SELECT <include refid="allSelectionColumn"/> FROM limiter_register_info WHERE id = #{id}
+    </select>
+
+    <select id="findByName" parameterType="String" resultType="cn.mianshiyi.braumadmin.entity.LimiterRegisterInfoEntity">
+        SELECT <include refid="allSelectionColumn"/> FROM limiter_register_info WHERE name = #{name}
+    </select>
+
+    <select id="findAll" resultType="cn.mianshiyi.braumadmin.entity.LimiterRegisterInfoEntity">
+        SELECT <include refid="allSelectionColumn"/> FROM limiter_register_info
+    </select>
+
+    <!-- 添加数据 -->
+    <insert id="insert" parameterType="cn.mianshiyi.braumadmin.entity.LimiterRegisterInfoEntity"  keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO limiter_register_info(
+        id,
+        name
+        )VALUES(
+        #{id},
+        #{name})
+    </insert>
+
+
+    <!-- 批量添加数据 -->
+    <insert id="insertBatch" parameterType="cn.mianshiyi.braumadmin.entity.LimiterRegisterInfoEntity"  keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO limiter_register_info(
+        id,
+        name
+        )VALUES
+        <foreach collection="listEntity" item="entity" separator=",">
+            (
+            #{id},
+            #{name}            )
+        </foreach>
+    </insert>
+
+
+    <!-- 根据ID更新信息-->
+    <update id="updateById" parameterType="cn.mianshiyi.braumadmin.entity.LimiterRegisterInfoEntity">
+        UPDATE limiter_register_info SET
+        <if test="id != null ">
+            id = #{id},
+        </if>
+        <if test="name != null
+            ">
+            name = #{name}
+        </if>
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据ID删除数据-->
+    <delete id="deleteById" parameterType="Long">
+        DELETE FROM limiter_register_info WHERE id = #{id}
+    </delete>
+</mapper>
+
