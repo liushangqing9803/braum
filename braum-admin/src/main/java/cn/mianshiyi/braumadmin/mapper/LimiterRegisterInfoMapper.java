@@ -1,6 +1,7 @@
 package cn.mianshiyi.braumadmin.mapper;
 
 import cn.mianshiyi.braumadmin.entity.LimiterRegisterInfoEntity;
+import cn.mianshiyi.braumadmin.entity.qo.LimiterRegisterDataQo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -55,4 +56,8 @@ public interface LimiterRegisterInfoMapper {
     LimiterRegisterInfoEntity findByName(@Param("name") String name);
 
     List<LimiterRegisterInfoEntity> findAll();
+
+    int findCount(LimiterRegisterDataQo qo);
+
+    List<LimiterRegisterInfoEntity> findPage(LimiterRegisterDataQo qo);
 }

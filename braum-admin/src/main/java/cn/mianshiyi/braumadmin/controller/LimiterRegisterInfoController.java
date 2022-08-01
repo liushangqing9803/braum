@@ -2,7 +2,9 @@ package cn.mianshiyi.braumadmin.controller;
 
 import cn.mianshiyi.braumadmin.entity.APIResponse;
 import cn.mianshiyi.braumadmin.entity.LimiterRegisterInfoEntity;
+import cn.mianshiyi.braumadmin.entity.ListResponse;
 import cn.mianshiyi.braumadmin.entity.qo.LimiterDataQo;
+import cn.mianshiyi.braumadmin.entity.qo.LimiterRegisterDataQo;
 import cn.mianshiyi.braumadmin.entity.vo.LimiterDataView;
 import cn.mianshiyi.braumadmin.service.LimiterRegisterInfoService;
 import org.springframework.stereotype.Controller;
@@ -23,8 +25,13 @@ public class LimiterRegisterInfoController {
 
     @PostMapping("/queryPage")
     @ResponseBody
-    public APIResponse find( LimiterDataQo qo) {
-        List<LimiterRegisterInfoEntity> all = limiterRegisterInfoService.findAll();
-        return APIResponse.returnSuccess(all);
+    public ListResponse find(LimiterRegisterDataQo qo) {
+        APIResponse<ListResponse<LimiterRegisterInfoEntity>> page = limiterRegisterInfoService.findPage(qo);
+        ListResponse<LimiterRegisterInfoEntity> data = page.getData();
+        if (data == null) {
+            return new ListResponse<>(null, 0, -1);
+        }
+        data.setCode(page.getErrcode());
+        return data;
     }
 }

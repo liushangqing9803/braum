@@ -16,10 +16,10 @@ $(function () {
                 limitName: 'limit' //每页数据量的参数名，默认：pageSize
             },
             response: {
-                statusName: 'errcode', //数据状态的字段名称，默认：code
+                statusName: 'code', //数据状态的字段名称，默认：code
                 statusCode: 0, //成功的状态码，默认：0
                 countName: 'totalCount', //数据总数的字段名称，默认：count
-                dataName: 'data' //数据列表的字段名称，默认：data
+                dataName: 'list' //数据列表的字段名称，默认：data
             },
             cols: [[
                 {type: 'numbers'}
@@ -59,18 +59,6 @@ $(function () {
     //搜索框
     layui.use(['form', 'laydate'], function () {
         var form = layui.form, layer = layui.layer
-            , laydate = layui.laydate;
-        //日期
-        laydate.render({
-            elem: '#createTimeStart',
-            format: 'yyyy-MM-dd HH:mm:ss',
-            type: 'datetime'
-        });
-        laydate.render({
-            elem: '#createTimeEnd',
-            format: 'yyyy-MM-dd HH:mm:ss',
-            type: 'datetime'
-        });
 
         //监听搜索框
         form.on('submit(searchSubmit)', function (data) {

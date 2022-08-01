@@ -69,8 +69,4 @@ public class MonitorStart {
             group.shutdownGracefully();
         }
     }
-    //TODO
-    public static void registerName(String name) {
-
-    }
 }

@@ -16,8 +16,7 @@ public class GatewayController {
     }
 
     @GetMapping("/viewLabel")
-    public String global(String name, ModelMap map) {
-        map.put("limitName", name);
+    public String global(ModelMap map) {
         return "viewLabel";
     }
 }

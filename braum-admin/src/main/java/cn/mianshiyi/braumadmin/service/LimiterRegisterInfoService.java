@@ -1,6 +1,9 @@
 package cn.mianshiyi.braumadmin.service;
 
+import cn.mianshiyi.braumadmin.entity.APIResponse;
 import cn.mianshiyi.braumadmin.entity.LimiterRegisterInfoEntity;
+import cn.mianshiyi.braumadmin.entity.ListResponse;
+import cn.mianshiyi.braumadmin.entity.qo.LimiterRegisterDataQo;
 
 import java.util.List;
 
@@ -51,4 +54,6 @@ public interface LimiterRegisterInfoService {
      * @return int
      */
     int deleteById(Long id);
+
+    APIResponse<ListResponse<LimiterRegisterInfoEntity>> findPage(LimiterRegisterDataQo qo);
 }

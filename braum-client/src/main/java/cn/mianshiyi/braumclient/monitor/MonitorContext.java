@@ -7,7 +7,6 @@ import io.netty.channel.Channel;
 import io.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,36 +42,30 @@ public class MonitorContext {
     static {
         sendMessageExecutor.scheduleAtFixedRate(() -> {
             try {
+                if (CHANNEL == null || !CHANNEL.isActive()) {
+                    return;
+                }
                 Collection<LimiterMonitorEntity> calc = calc();
                 if (calc == null) {
                     return;
                 }
-                List<LimiterMonitorEntity> objects = new ArrayList<>();
-                for (LimiterMonitorEntity limiterMonitorEntity : calc) {
-                    LimiterMonitorEntity limiterMonitorEntity1 = new LimiterMonitorEntity();
-                    BeanUtils.copyProperties(limiterMonitorEntity, limiterMonitorEntity1);
-                    limiterMonitorEntity1.setClientIp("127.0.0.1");
-                    limiterMonitorEntity1.setExecCount(limiterMonitorEntity1.getExecCount() + 10);
-                    limiterMonitorEntity1.setBlockCount(limiterMonitorEntity1.getBlockCount() + 10);
-                    objects.add(limiterMonitorEntity1);
-                }
                 RemoteMessage<Collection<LimiterMonitorEntity>> remoteMessage = new RemoteMessage(10, calc);
                 CHANNEL.writeAndFlush(Unpooled.copiedBuffer(JSON.toJSONString(remoteMessage) + "\n", CharsetUtil.UTF_8));
-                //TODO 测试使用
-                RemoteMessage<Collection<LimiterMonitorEntity>> remoteMessage1 = new RemoteMessage(10, objects);
-                CHANNEL.writeAndFlush(Unpooled.copiedBuffer(JSON.toJSONString(remoteMessage1) + "\n", CharsetUtil.UTF_8));
-
             } catch (Exception e) {
                 LOGGER.error("send monitor message exception", e);
             }
         }, 1000, 1000, TimeUnit.MILLISECONDS);
-
+        //清理任务
         clearMessageExecutor.scheduleAtFixedRate(() -> {
-            long now = System.currentTimeMillis() / 1000 - 5;
-            for (Long key : monitorMap.keySet()) {
-                if (key < now) {
-                    monitorMap.remove(key);
+            try {
+                long now = System.currentTimeMillis() / 1000 - 5;
+                for (Long key : monitorMap.keySet()) {
+                    if (key < now) {
+                        monitorMap.remove(key);
+                    }
                 }
+            } catch (Exception e) {
+                LOGGER.error("clear monitor message exception", e);
             }
         }, 1000, 5000, TimeUnit.MILLISECONDS);
     }
@@ -90,6 +83,9 @@ public class MonitorContext {
     }
 
     public static void register(String name) {
+        if (CHANNEL == null || !CHANNEL.isActive()) {
+            return;
+        }
         RemoteMessage<LimiterMonitorRegisterEntity> remoteMessage = new RemoteMessage(20, new LimiterMonitorRegisterEntity(name));
         CHANNEL.writeAndFlush(Unpooled.copiedBuffer(JSON.toJSONString(remoteMessage) + "\n", CharsetUtil.UTF_8));
     }
