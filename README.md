@@ -12,7 +12,8 @@
 6. 等待获取token
 7. **注解支持同一个方法多个限流规则**
 8. 监控看板
-<img width="1281" alt="image" src="https://user-images.githubusercontent.com/30620322/181720209-a1b9d0cd-4694-48bd-a10e-30ce96d14abc.png">
+<img width="1509" alt="image" src="https://user-images.githubusercontent.com/30620322/182065129-2fcc7ae2-ebe3-41c6-911c-f08f2bbf603b.png">
+<img width="1221" alt="image" src="https://user-images.githubusercontent.com/30620322/182065157-053d9621-d557-4a20-86b4-fb118b92e091.png">
 
 
 ### 使用方式：
@@ -125,5 +126,6 @@ public class Application extends SpringBootServletInitializer {
     long timeout() default 10L;
 ```
 ### 后续支持
-1. 可视化监控
-2. 限流规则运行时修改
+1. 限流规则运行时修改 
+   支持配置中心 apollo、nacos等
+   支持admin模块修改
